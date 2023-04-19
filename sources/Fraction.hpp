@@ -62,18 +62,21 @@ public:
 
     Fraction operator++();
     Fraction operator++(int);
+
     Fraction operator--();
     Fraction operator--(int);
+
     friend std::ostream& operator<<(std::ostream& stream, const Fraction& other);
     friend std::istream& operator>>(std::istream& stream, Fraction& other);
+
     int getGCD(int a, int b);
     Fraction reduceFraction();
+    std::string toString() const;
+    Fraction floatToFraction(float num);
+
 };
 
 }
-// ariel::Fraction operator+(const ariel::Fraction& other, float number) ;
-// ariel::Fraction operator+(float number, const ariel::Fraction& other) ;
-
 #endif //FRACTION_HPP
 
 
