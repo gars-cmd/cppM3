@@ -49,11 +49,12 @@ ariel::Fraction ariel::Fraction::operator+(const Fraction &other) const{
 }
 
 ariel::Fraction ariel::operator+(const ariel::Fraction& other, float number){
-    return  ariel::Fraction();
+    ariel::Fraction fractioned = ariel::floatToFraction(number);
+    return other + fractioned;
 }
 
 ariel::Fraction ariel::operator+(float number, const ariel::Fraction& other){
-    return  ariel::Fraction();
+    return other + number;
 }
 
 // ############### SOUSTRACTION #############
@@ -66,11 +67,12 @@ ariel::Fraction ariel::Fraction::operator-(const Fraction &other) const{
 }
 
 ariel::Fraction ariel::operator-(const ariel::Fraction& other, float number){
-    return  ariel::Fraction();
+    ariel::Fraction fractioned = ariel::floatToFraction(number);
+    return other - fractioned;
 }
 
 ariel::Fraction ariel::operator-(float number, const ariel::Fraction& other){
-    return  ariel::Fraction();
+    return other - number;
 }
 
 // ############### MULTIPLICATION #############
@@ -82,11 +84,13 @@ ariel::Fraction ariel::Fraction::operator*(const Fraction &other) const{
 }
 
 ariel::Fraction ariel::operator*(const ariel::Fraction& other, float number){
-    return  ariel::Fraction();
+    ariel::Fraction fractioned = ariel::floatToFraction(number);
+    return other * fractioned;
 }
 
 ariel::Fraction ariel::operator*(float number, const ariel::Fraction& other){
-    return  ariel::Fraction();
+    ariel::Fraction fractioned = ariel::floatToFraction(number);
+    return other * fractioned;
 }
 
 // ############### DIVISION #############
@@ -111,7 +115,7 @@ bool ariel::Fraction::operator==(const ariel::Fraction &other) const{
 }
 
 bool ariel::operator==(const ariel::Fraction &other, float number) {
-    ariel::Fraction frac = ariel::Fraction::floatToFraction(number);
+    ariel::Fraction frac = ariel::floatToFraction(number);
     return other == frac;
 }
 
@@ -248,6 +252,7 @@ int ariel::Fraction::getGCD(int a, int b){
 // reduce the fraction to is lowest form (with help of gcd)
 ariel::Fraction ariel::Fraction::reduceFraction(){
     int gcd = ariel::Fraction::getGCD(this->numerator,this->denominator);
+    if (gcd == 0){return ariel::Fraction(0, 1);}
     return ariel::Fraction( (this->numerator / gcd) , (this->denominator / gcd) );
 }
 
@@ -257,7 +262,7 @@ std::string ariel::Fraction::toString() const{
         + std::to_string(this->denominator);
 }
 
-ariel::Fraction floatToFraction(float num){
+ariel::Fraction ariel::floatToFraction(float num){
     int signOfNum  = (num > 0) ? 1 : -1;
     num = std::abs(num);
     num *= 1000;

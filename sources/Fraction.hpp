@@ -72,9 +72,10 @@ public:
     int getGCD(int a, int b);
     Fraction reduceFraction();
     std::string toString() const;
-    Fraction floatToFraction(float num);
 
 };
+
+ariel::Fraction floatToFraction(float num);
 
 }
 #endif //FRACTION_HPP

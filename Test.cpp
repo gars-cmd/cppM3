@@ -106,15 +106,15 @@ TEST_CASE("Multiplication test ") {
     ariel::Fraction result = f1 * f2;
     CHECK(result.getNumerator() == 6);
     CHECK(result.getDenominator() == 35);
-
+    //
     result = f3 * f4;
     CHECK(result.getNumerator() == 4);
     CHECK(result.getDenominator() == 35);
-
+    //
     result = f5 * f6;
     CHECK(result.getNumerator() == 0);
     CHECK(result.getDenominator() == 16);
-
+    //
     ariel::Fraction f7(1, 4);
     ariel::Fraction f8(-3, 2);
 
@@ -122,7 +122,7 @@ TEST_CASE("Multiplication test ") {
     result = f7 * num;
     CHECK(result.getNumerator() == 1);
     CHECK(result.getDenominator() == 8);
-    
+
     float num2 = -0.75;
     result = num2 * f8;
     CHECK(result.getNumerator() == 9);
