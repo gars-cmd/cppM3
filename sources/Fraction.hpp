@@ -69,8 +69,8 @@ public:
     friend std::ostream& operator<<(std::ostream& stream, const Fraction& other);
     friend std::istream& operator>>(std::istream& stream, Fraction& other);
 
-    int getGCD(int a, int b);
-    Fraction reduceFraction();
+    int getGCD(int a, int b)const;
+    Fraction reduceFraction()const;
     std::string toString() const;
 
 };
