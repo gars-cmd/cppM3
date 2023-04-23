@@ -76,6 +76,7 @@ public:
 };
 
 ariel::Fraction floatToFraction(float num);
+std::pair<int, int> fixSign(int numerator, int denominator);
 
 }
 #endif //FRACTION_HPP

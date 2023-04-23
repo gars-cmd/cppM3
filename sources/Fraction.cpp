@@ -5,6 +5,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 // ############### CONSTRUCTOR,GETTER,SETTER #############
 
@@ -12,15 +13,24 @@ ariel::Fraction::~Fraction(){
 
 }
 
+std::pair<int, int> ariel::fixSign(int numerator, int denominator){
+    int sign = (numerator < 0) ^ (denominator < 0) ? -1 : 1;
+    numerator = std::abs(numerator);
+    denominator = std::abs(denominator);
+    return { (sign * numerator) , denominator};
+}
+
 ariel::Fraction::Fraction(int numerator, int denominator){
    if (denominator == 0) {
         throw std::invalid_argument("0 cannot be denominator");
    }
-    this->numerator = numerator;
-    this->denominator = denominator;
+    std::pair<int,int> fixedPair = fixSign(numerator, denominator);
+    this->numerator = fixedPair.first;
+    this->denominator = fixedPair.second;
 }
 
 int ariel::Fraction::getNumerator(){
+
     return  this->numerator;
 }
 
@@ -29,14 +39,19 @@ int ariel::Fraction::getDenominator(){
 }
 
 void ariel::Fraction::setNumerator(int numerator){
-    this->numerator = numerator;
+
+    std::pair<int,int> fixedPair = fixSign(numerator, this->denominator);
+    this->numerator = fixedPair.first;
+    this->denominator = fixedPair.second;
 }
 
 void ariel::Fraction::setDenominator(int denominator){
     if (denominator == 0) {
         throw std::invalid_argument("cannot set denominator to 0");
     }
-    this->denominator = denominator;
+    std::pair<int,int> fixedPair = fixSign(this->numerator, denominator);
+    this->numerator = fixedPair.first;
+    this->denominator = fixedPair.second;
 }
 
 // ############### ADDITION #############
@@ -162,44 +177,43 @@ bool ariel::operator>(const float number, const ariel::Fraction &other) {
 
 bool ariel::Fraction::operator<(const ariel::Fraction &other) const{
 
-    return (*this - other )<0;
+    return (other - *this)<0;
 }
 
 bool ariel::operator<(const ariel::Fraction &other, const float number) {
-    return false;
+    return (number - other) < 0 ;
 }
 
 bool ariel::operator<(const float number, const ariel::Fraction &other) {
-    return false;
+    return other < number ;
 }
 
 // ############### GREATER THAN EQUAL #############
 
 bool ariel::Fraction::operator>=(const ariel::Fraction &other) const{
-    return false;
+    return ( (*this > other) && (*this == other) );
 }
 
 bool ariel::operator>=(const ariel::Fraction &other, const float number) {
-    return false;
+    return ( (other > number) && (other == number) );
 }
 
 bool ariel::operator>=(const float number, const ariel::Fraction &other) {
-    return false;
+    return other >= number;
 }
-
 
 // ############### LESS THAN EQUAL #############
 
 bool ariel::Fraction::operator<=(const ariel::Fraction &other) const{
-    return false;
+    return ( (*this < other) && (*this == other) );
 }
 
 bool ariel::operator<=(const ariel::Fraction &other, const float number) {
-    return false;
+    return  ( (other < number) && (other == number) );
 }
 
 bool ariel::operator<=(const float number, const ariel::Fraction &other) {
-    return false;
+    return  ( (number < other) && (number == other) );
 }
 
 // ############### INCREMENT ###############
@@ -281,3 +295,4 @@ ariel::Fraction ariel::floatToFraction(float num){
 //https://www.geeksforgeeks.org/reduce-the-fraction-to-its-lowest-form/
 //https://www.geeksforgeeks.org/program-to-find-gcd-or-hcf-of-two-numbers/
 //https://www.simplilearn.com/tutorials/cpp-tutorial/int-to-string-cpp
+//https://www.geeksforgeeks.org/pair-in-cpp-stl/
