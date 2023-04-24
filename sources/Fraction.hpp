@@ -19,6 +19,10 @@ public:
     int getDenominator();
     void setNumerator(int numerator);
     void setDenominator(int denominator);
+    Fraction(const Fraction& other) noexcept;
+    Fraction& operator=(const Fraction& other) noexcept;
+    Fraction (ariel::Fraction&& other) noexcept;
+    Fraction& operator=(Fraction&& other) noexcept;
 
     Fraction operator+(const Fraction& other) const;
     friend Fraction operator+(const Fraction& other, float number) ;
@@ -69,7 +73,7 @@ public:
     friend std::ostream& operator<<(std::ostream& stream, const Fraction& other);
     friend std::istream& operator>>(std::istream& stream, Fraction& other);
 
-    int getGCD(int a, int b)const;
+    int getGCD(int num1, int num2)const;
     Fraction reduceFraction()const;
     std::string toString() const;
 
@@ -77,6 +81,8 @@ public:
 
 ariel::Fraction floatToFraction(float num);
 std::pair<int, int> fixSign(int numerator, int denominator);
+bool isValidStream(int numerator, char slash, int denominator);
+bool checkInteger(std::string input);
 
 }
 #endif //FRACTION_HPP

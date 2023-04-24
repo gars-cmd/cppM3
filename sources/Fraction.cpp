@@ -1,5 +1,7 @@
 #include "Fraction.hpp"
+#include <cctype>
 #include <cmath>
+#include <cstddef>
 #include <iostream>
 #include <iterator>
 #include <ostream>
@@ -13,12 +15,6 @@ ariel::Fraction::~Fraction(){
 
 }
 
-std::pair<int, int> ariel::fixSign(int numerator, int denominator){
-    int sign = (numerator < 0) ^ (denominator < 0) ? -1 : 1;
-    numerator = std::abs(numerator);
-    denominator = std::abs(denominator);
-    return { (sign * numerator) , denominator};
-}
 
 ariel::Fraction::Fraction(int numerator, int denominator){
    if (denominator == 0) {
@@ -27,6 +23,47 @@ ariel::Fraction::Fraction(int numerator, int denominator){
     std::pair<int,int> fixedPair = fixSign(numerator, denominator);
     this->numerator = fixedPair.first;
     this->denominator = fixedPair.second;
+}
+
+// copy constructor
+ariel::Fraction::Fraction(const Fraction& other) noexcept{
+    this->numerator = other.numerator;
+    this->denominator = other.denominator;
+}
+
+//copy assignement operator
+ariel::Fraction& ariel::Fraction::operator=(const Fraction& other) noexcept{
+    if (this != &other) {
+        this->numerator = 0 ;
+        this->numerator = 1 ;
+
+        this->numerator = other.numerator;
+        this->denominator = other.denominator;
+    }
+    return *this;
+}
+
+// move constructor 
+ariel::Fraction::Fraction(ariel::Fraction&& other) noexcept{
+    numerator = other.numerator;
+    denominator = other.denominator;
+    other.numerator = 0;
+    other.denominator = 1;
+}
+
+//move assignement operator
+ariel::Fraction& ariel::Fraction::operator=(ariel::Fraction&& other) noexcept{
+    if (this != &other) {
+        numerator = 0;
+        denominator = 1;
+
+        numerator = other.numerator;
+        denominator = other.denominator;
+        
+        other.numerator = 0;
+        other.denominator = 1;
+    }
+    return *this;
 }
 
 int ariel::Fraction::getNumerator(){
@@ -50,8 +87,7 @@ void ariel::Fraction::setDenominator(int denominator){
         throw std::invalid_argument("cannot set denominator to 0");
     }
     std::pair<int,int> fixedPair = fixSign(this->numerator, denominator);
-    this->numerator = fixedPair.first;
-    this->denominator = fixedPair.second;
+    this->numerator = fixedPair.first; this->denominator = fixedPair.second;
 }
 
 // ############### ADDITION #############
@@ -78,6 +114,8 @@ ariel::Fraction ariel::Fraction::operator-(const Fraction &other) const{
     int numerator = (this->numerator * other.denominator)
                   - (this->denominator * other.numerator);
     int denominator = this->denominator * other.denominator;
+    std::pair<int,int> fixedPair = fixSign(numerator, denominator);
+    numerator = fixedPair.first; denominator = fixedPair.second;
     return ariel::Fraction(numerator, denominator).reduceFraction();
 }
 
@@ -87,7 +125,8 @@ ariel::Fraction ariel::operator-(const ariel::Fraction& other, const float numbe
 }
 
 ariel::Fraction ariel::operator-(const float number, const ariel::Fraction& other){
-    return other - number;
+    ariel::Fraction fractioned = ariel::floatToFraction(number);
+    return fractioned - other;
 }
 
 // ############### MULTIPLICATION #############
@@ -113,16 +152,17 @@ ariel::Fraction ariel::operator*(const float number, const ariel::Fraction& othe
 ariel::Fraction ariel::Fraction::operator/(const ariel::Fraction &other) const{
     int new_numerator = this->numerator * other.denominator;
     int new_denominator = this->denominator * other.numerator;
-    return ariel::Fraction(new_numerator, new_denominator);
+    return ariel::Fraction(new_numerator, new_denominator).reduceFraction();
 }
 
 ariel::Fraction ariel::operator/(const ariel::Fraction& other, const float number){
     ariel::Fraction fractioned = ariel::floatToFraction(number);
-    return  fractioned / other;
+    return  other / fractioned;
 }
 
 ariel::Fraction ariel::operator/(const float number, const ariel::Fraction& other){
-    return  other / number ;
+    ariel::Fraction fractioned = ariel::floatToFraction(number);
+    return  fractioned / other;
 }
 
 // ############### EQUALITY #############
@@ -162,58 +202,65 @@ bool ariel::operator!=(const float number, const ariel::Fraction &other) {
 // ############### GREATER THAN #############
 
 bool ariel::Fraction::operator>(const ariel::Fraction &other) const{
-    return (*this - other )>0;
+    int firstNumerator = this->numerator * other.denominator;
+    int secondNumerator = other.numerator * this->denominator;
+    return firstNumerator > secondNumerator;
 }
 
 bool ariel::operator>(const ariel::Fraction &other, const float number) {
-    return (other - number) > 0;
+    ariel::Fraction frac = ariel::floatToFraction(number);
+    return (other > frac);
 }
 
 bool ariel::operator>(const float number, const ariel::Fraction &other) {
-    return (other > number);
+    ariel::Fraction frac = ariel::floatToFraction(number);
+    return (frac > other);
 }
 
 // ############### LESS THAN #############
 
 bool ariel::Fraction::operator<(const ariel::Fraction &other) const{
-
-    return (other - *this)<0;
+    int firstNumerator = this->numerator * other.denominator;
+    int secondNumerator = other.numerator * this->denominator;
+    return firstNumerator < secondNumerator;
 }
 
 bool ariel::operator<(const ariel::Fraction &other, const float number) {
-    return (number - other) < 0 ;
+    ariel::Fraction frac = ariel::floatToFraction(number);
+    return (other < frac);
 }
 
 bool ariel::operator<(const float number, const ariel::Fraction &other) {
-    return other < number ;
+    ariel::Fraction frac = ariel::floatToFraction(number);
+    return (frac < other);
 }
 
 // ############### GREATER THAN EQUAL #############
 
 bool ariel::Fraction::operator>=(const ariel::Fraction &other) const{
-    return ( (*this > other) && (*this == other) );
+    return ( (*this > other) || (*this == other) );
 }
 
 bool ariel::operator>=(const ariel::Fraction &other, const float number) {
-    return ( (other > number) && (other == number) );
+    return ( (other > number) || (other == number) );
 }
 
 bool ariel::operator>=(const float number, const ariel::Fraction &other) {
-    return other >= number;
+    return  ( (number > other) || (number == other) );
 }
 
 // ############### LESS THAN EQUAL #############
 
 bool ariel::Fraction::operator<=(const ariel::Fraction &other) const{
-    return ( (*this < other) && (*this == other) );
+    return ( (*this < other) || (*this == other) );
 }
 
 bool ariel::operator<=(const ariel::Fraction &other, const float number) {
-    return  ( (other < number) && (other == number) );
+    return  ( (other < number) || (other == number) );
 }
 
 bool ariel::operator<=(const float number, const ariel::Fraction &other) {
-    return  ( (number < other) && (number == other) );
+    return  ( (number < other) || (number == other) );
 }
 
 // ############### INCREMENT ###############
@@ -252,17 +299,53 @@ std::ostream& ariel::operator<<(std::ostream& stream, const ariel::Fraction& oth
 // ############### CIN ###############
 
 std::istream& ariel::operator>>(std::istream& stream, ariel::Fraction& other){
-    int numerator, denominator;
-    stream >> numerator >> denominator;
-    other = ariel::Fraction(numerator, denominator);
+    int numerator, denominator; char slash;
+    stream >> numerator; stream >> slash; stream >> denominator;
+    bool check = isValidStream(numerator, slash, denominator);
+    if (check == true) {
+        other = ariel::Fraction(numerator, denominator);
+    }else {
+        other = ariel::Fraction(0, 1);
+    }
     return stream;
 }
 
-// return the gcd of two number
-int ariel::Fraction::getGCD(int a, int b) const {
-    int result = std::min(a, b);
+// ############### UTILS ###############
+
+bool ariel::isValidStream(int numerator, char slash, int denominator){
+    bool isNumerator = ariel::checkInteger(std::to_string(numerator));
+    bool isSlash = (slash == '/');
+    bool isDenominator = ariel::checkInteger(std::to_string(denominator));
+    return isNumerator && isSlash && isDenominator;
+}
+
+bool ariel::checkInteger(std::string input)
+{
+    bool isNeg=false;
+    size_t itr=0;
+    if(input[0] == '-')
+    {
+        isNeg=true;
+        itr=1;
+    }
+ 
+    for(size_t i = itr ; i < input.length() ; i++)
+    {
+        if(!std::isdigit(input[i])){
+            return false;
+        }
+    }
+    return true;
+}
+
+int ariel::Fraction::getGCD(int num1, int num2) const {
+
+    //  need to do abs because the old function didn't work for negative numbers
+    num1 = std::abs(num1); num2 = std::abs(num2);
+
+    int result = std::min(num1, num2);
     while (result > 0) {
-        if (a % result == 0 & b % result == 0) {
+        if (num1 % result == 0 & num2 % result == 0) {
             break;
         }
     result--;
@@ -290,9 +373,20 @@ ariel::Fraction ariel::floatToFraction(float num){
     return ariel::Fraction( (std::trunc(num) * signOfNum), 1000 ).reduceFraction();
 }
 
+std::pair<int, int> ariel::fixSign(int numerator, int denominator){
+    int sign = (numerator < 0) ^ (denominator < 0) ? -1 : 1;
+    numerator = std::abs(numerator);
+    denominator = std::abs(denominator);
+    return { (sign * numerator) , denominator};
+}
+
+
 
 //Ressources : 
 //https://www.geeksforgeeks.org/reduce-the-fraction-to-its-lowest-form/
 //https://www.geeksforgeeks.org/program-to-find-gcd-or-hcf-of-two-numbers/
 //https://www.simplilearn.com/tutorials/cpp-tutorial/int-to-string-cpp
 //https://www.geeksforgeeks.org/pair-in-cpp-stl/
+//https://www.youtube.com/watch?v=2972LRdyquk&pp=ygUfPj4gb3BlcmF0b3Igb3ZlcmxvYWRpbmcgaW4gYysrIA%3D%3D
+//https://www.geeksforgeeks.org/overloading-stream-insertion-operators-c/
+//https://java2blog.com/check-if-input-is-integer-in-cpp/
