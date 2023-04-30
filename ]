@@ -12,8 +12,8 @@
 #include <utility>
 #include <limits>
 
-#define MAX_INT  std::numeric_limits<int>::max()
-#define MIN_INT  std::numeric_limits<int>::min()
+#define MAX_INT  std::numeric_limits<int>::max();
+#define MIN_INT  std::numeric_limits<int>::min();
 
 
 // ############### CONSTRUCTOR,GETTER,SETTER #############
@@ -401,8 +401,8 @@ std::pair<int, int> ariel::fixSign(int numerator, int denominator){
 }
 
 int ariel::addCheckOverflow(int a, int b){
-    if ( (b > 0 && a > MAX_INT - b) 
-    || (b < 0 && a < MIN_INT - b)){
+    if ( (b > 0 && a > INT_MAX - b) 
+    || (b < 0 && a < INT_MIN - b)){
         throw std::overflow_error("int overflow on add");
     }
     else {
@@ -411,8 +411,8 @@ int ariel::addCheckOverflow(int a, int b){
 }
 
 int ariel::subCheckOverflow(int a, int b){
-    if ( (b < 0  && a > MAX_INT + b)
-    ||  (b > 0 && a < MIN_INT + b) ){
+    if ( (b < 0  && a > INT_MAX + b)
+    ||  (b > 0 && a < INT_MIN + b) ){
         throw std::overflow_error("int overflow on sub");
     }
     else {
@@ -421,8 +421,8 @@ int ariel::subCheckOverflow(int a, int b){
 }
 
 int ariel::mulCheckOverflow(int a, int b){
-    long long tmp = static_cast<long long>(a) * b;
-    if ( (tmp > MAX_INT) || (tmp < MIN_INT) ) {
+    long long tmp = a * b;
+    if ( (tmp > INT_MAX) || (tmp < INT_MIN) ) {
         throw std::overflow_error("int overflow on mul");
     }else {
         return a * b;
