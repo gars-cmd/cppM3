@@ -13,7 +13,9 @@ class Fraction
 private:
     int numerator , denominator;
 public:
-    Fraction(int numerator = 0, int denominator = 1);
+    Fraction();
+    Fraction(int numerator , int denominator );
+    Fraction(float number);
     ~Fraction();
     int getNumerator();
     int getDenominator();
@@ -81,7 +83,7 @@ public:
 
 ariel::Fraction floatToFraction(float num);
 std::pair<int, int> fixSign(int numerator, int denominator);
-bool isValidStream(int numerator, char slash, int denominator);
+bool isValidStream(int numerator, int denominator);
 bool checkInteger(std::string input);
 
 }

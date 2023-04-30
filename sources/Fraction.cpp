@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstddef>
 #include <iostream>
+#include <istream>
 #include <iterator>
 #include <ostream>
 #include <stdexcept>
@@ -15,14 +16,24 @@ ariel::Fraction::~Fraction(){
 
 }
 
+ariel::Fraction::Fraction(){
+    this->numerator = 0;
+    this->numerator = 1;
+}
 
 ariel::Fraction::Fraction(int numerator, int denominator){
    if (denominator == 0) {
-        throw std::invalid_argument("0 cannot be denominator");
+        throw std::runtime_error("0 cannot be at denominator");
    }
     std::pair<int,int> fixedPair = fixSign(numerator, denominator);
     this->numerator = fixedPair.first;
     this->denominator = fixedPair.second;
+}
+
+ariel::Fraction::Fraction(float number){
+    ariel::Fraction frac = floatToFraction(number);
+    this->numerator = frac.numerator;
+    this->denominator = frac.denominator;
 }
 
 // copy constructor
@@ -59,7 +70,7 @@ ariel::Fraction& ariel::Fraction::operator=(ariel::Fraction&& other) noexcept{
 
         numerator = other.numerator;
         denominator = other.denominator;
-        
+
         other.numerator = 0;
         other.denominator = 1;
     }
@@ -84,7 +95,7 @@ void ariel::Fraction::setNumerator(int numerator){
 
 void ariel::Fraction::setDenominator(int denominator){
     if (denominator == 0) {
-        throw std::invalid_argument("cannot set denominator to 0");
+        throw std::runtime_error("cannot set denominator to 0");
     }
     std::pair<int,int> fixedPair = fixSign(this->numerator, denominator);
     this->numerator = fixedPair.first; this->denominator = fixedPair.second;
@@ -143,7 +154,6 @@ ariel::Fraction ariel::operator*(const ariel::Fraction& other, const float numbe
 }
 
 ariel::Fraction ariel::operator*(const float number, const ariel::Fraction& other){
-    // ariel::Fraction fractioned = ariel::floatToFraction(number);
     return other * number;
 }
 
@@ -292,31 +302,30 @@ ariel::Fraction ariel::Fraction::operator--(int){
 // ############### COUT ###############
 
 std::ostream& ariel::operator<<(std::ostream& stream, const ariel::Fraction& other){
-    stream << other.numerator << '/' << other.denominator ;
-    return stream;
+    Fraction frac = other.reduceFraction();
+    return stream << frac.numerator << '/' << frac.denominator ;
 }
 
 // ############### CIN ###############
 
 std::istream& ariel::operator>>(std::istream& stream, ariel::Fraction& other){
-    int numerator, denominator; char slash;
-    stream >> numerator; stream >> slash; stream >> denominator;
-    bool check = isValidStream(numerator, slash, denominator);
+    int numerator = 0, denominator = 0;
+    stream >> numerator >> denominator ;
+    bool check = isValidStream(numerator, denominator);
     if (check == true) {
-        other = ariel::Fraction(numerator, denominator);
+        other = ariel::Fraction(numerator, denominator).reduceFraction();
     }else {
-        other = ariel::Fraction(0, 1);
+        throw std::runtime_error("Invalid input format");
     }
     return stream;
 }
 
 // ############### UTILS ###############
 
-bool ariel::isValidStream(int numerator, char slash, int denominator){
+bool ariel::isValidStream(int numerator, int denominator){
     bool isNumerator = ariel::checkInteger(std::to_string(numerator));
-    bool isSlash = (slash == '/');
     bool isDenominator = ariel::checkInteger(std::to_string(denominator));
-    return isNumerator && isSlash && isDenominator;
+    return isNumerator && isDenominator && (denominator != 0);
 }
 
 bool ariel::checkInteger(std::string input)
@@ -390,3 +399,4 @@ std::pair<int, int> ariel::fixSign(int numerator, int denominator){
 //https://www.youtube.com/watch?v=2972LRdyquk&pp=ygUfPj4gb3BlcmF0b3Igb3ZlcmxvYWRpbmcgaW4gYysrIA%3D%3D
 //https://www.geeksforgeeks.org/overloading-stream-insertion-operators-c/
 //https://java2blog.com/check-if-input-is-integer-in-cpp/
+//https://stackoverflow.com/questions/7959688/how-to-ignore-white-spaces-input-stream-in-operator-overload
