@@ -18,9 +18,7 @@
 
 // ############### CONSTRUCTOR,GETTER,SETTER #############
 
-ariel::Fraction::~Fraction(){
-
-}
+ariel::Fraction::~Fraction(){ }
 
 ariel::Fraction::Fraction(){
     this->numerator = 0;
@@ -87,17 +85,11 @@ ariel::Fraction& ariel::Fraction::operator=(ariel::Fraction&& other) noexcept{
     return *this;
 }
 
-int ariel::Fraction::getNumerator(){
+int ariel::Fraction::getNumerator(){ return  this->numerator; }
 
-    return  this->numerator;
-}
-
-int ariel::Fraction::getDenominator(){
-    return  this->denominator;
-}
+int ariel::Fraction::getDenominator(){ return  this->denominator; }
 
 void ariel::Fraction::setNumerator(int numerator){
-
     std::pair<int,int> fixedPair = fixSign(numerator, this->denominator);
     this->numerator = fixedPair.first;
     this->denominator = fixedPair.second;
@@ -127,9 +119,7 @@ ariel::Fraction ariel::operator+(const ariel::Fraction& other, const double numb
     return other + fractioned;
 }
 
-ariel::Fraction ariel::operator+(const double number, const ariel::Fraction& other){
-    return other + number;
-}
+ariel::Fraction ariel::operator+(const double number, const ariel::Fraction& other){ return other + number; }
 
 // ############### SUBSTRACTION #############
 
@@ -167,9 +157,7 @@ ariel::Fraction ariel::operator*(const ariel::Fraction& other, const double numb
     return other * fractioned;
 }
 
-ariel::Fraction ariel::operator*(const double number, const ariel::Fraction& other){
-    return other * number;
-}
+ariel::Fraction ariel::operator*(const double number, const ariel::Fraction& other){ return other * number; }
 
 // ############### DIVISION #############
 
@@ -205,25 +193,15 @@ bool ariel::operator==(const ariel::Fraction &other, const double number) {
     return other == frac;
 }
 
-bool ariel::operator==(const double number, const ariel::Fraction &other) {
-    return other == number;
-}
+bool ariel::operator==(const double number, const ariel::Fraction &other) { return other == number; }
 
 // ############### INEQUALITY #############
 
-bool ariel::Fraction::operator!=(const ariel::Fraction &other) const{
-    return !(*this == other);
+bool ariel::Fraction::operator!=(const ariel::Fraction &other) const{ return !(*this == other); }
 
-}
+bool ariel::operator!=(const ariel::Fraction &other, const double number) { return !(other == number); }
 
-bool ariel::operator!=(const ariel::Fraction &other, const double number) {
-    return !(other == number);
-}
-
-bool ariel::operator!=(const double number, const ariel::Fraction &other) {
-    return (other != number);
-}
-
+bool ariel::operator!=(const double number, const ariel::Fraction &other) { return (other != number); }
 
 // ############### GREATER THAN #############
 
@@ -263,31 +241,19 @@ bool ariel::operator<(const double number, const ariel::Fraction &other) {
 
 // ############### GREATER THAN EQUAL #############
 
-bool ariel::Fraction::operator>=(const ariel::Fraction &other) const{
-    return ( (*this > other) || (*this == other) );
-}
+bool ariel::Fraction::operator>=(const ariel::Fraction &other) const{ return ( (*this > other) || (*this == other) ); }
 
-bool ariel::operator>=(const ariel::Fraction &other, const double number) {
-    return ( (other > number) || (other == number) );
-}
+bool ariel::operator>=(const ariel::Fraction &other, const double number) { return ( (other > number) || (other == number) ); }
 
-bool ariel::operator>=(const double number, const ariel::Fraction &other) {
-    return  ( (number > other) || (number == other) );
-}
+bool ariel::operator>=(const double number, const ariel::Fraction &other) { return  ( (number > other) || (number == other) ); }
 
 // ############### LESS THAN EQUAL #############
 
-bool ariel::Fraction::operator<=(const ariel::Fraction &other) const{
-    return ( (*this < other) || (*this == other) );
-}
+bool ariel::Fraction::operator<=(const ariel::Fraction &other) const{ return ( (*this < other) || (*this == other) ); }
 
-bool ariel::operator<=(const ariel::Fraction &other, const double number) {
-    return  ( (other < number) || (other == number) );
-}
+bool ariel::operator<=(const ariel::Fraction &other, const double number) { return  ( (other < number) || (other == number) ); }
 
-bool ariel::operator<=(const double number, const ariel::Fraction &other) {
-    return  ( (number < other) || (number == other) );
-}
+bool ariel::operator<=(const double number, const ariel::Fraction &other) { return  ( (number < other) || (number == other) ); }
 
 // ############### INCREMENT ###############
 
@@ -369,14 +335,12 @@ int ariel::Fraction::getGCD(int num1, int num2) const {
     }else if (num2 == MIN_INT) { num2 = MAX_INT; }
     //  need to do abs because the old function didn't work for negative numbers
     num1 = std::abs(num1); num2 = std::abs(num2);
-    int result = std::min(num1, num2);
-    while (result > 0) {
-        if (num1 % result == 0 & num2 % result == 0) {
-            break;
-        }
-    result--;
+    while (num2 != 0) {
+        int rest = num1 % num2;
+        num1 = num2;
+        num2 = rest;
     }
-    return result;
+    return num1;
 }
 
 // reduce the fraction to is lowest form (with help of gcd)
@@ -403,6 +367,7 @@ ariel::Fraction ariel::doubleToFraction(double num){
     }
 }
 
+// put the sign to the numerator
 std::pair<int, int> ariel::fixSign(int numerator, int denominator){
     int sign = (numerator < 0) ^ (denominator < 0) ? -1 : 1;
     numerator = std::abs(numerator);
@@ -410,32 +375,32 @@ std::pair<int, int> ariel::fixSign(int numerator, int denominator){
     return { (sign * numerator) , denominator};
 }
 
-int ariel::addCheckOverflow(int a, int b){
-    if ( (b > 0 && a > MAX_INT - b) 
-    || (b < 0 && a < MIN_INT - b)){
+int ariel::addCheckOverflow(int val1, int val2){
+    if ( (val2 > 0 && val1 > MAX_INT - val2) 
+    || (val2 < 0 && val1 < MIN_INT - val2)){
         throw std::overflow_error("from addCheckOverflow");
     }
     else {
-        return a+b;
+        return val1+val2;
     }
 }
 
-int ariel::subCheckOverflow(int a, int b){
-    if ( (b < 0  && a > MAX_INT + b)
-    ||  (b > 0 && a < MIN_INT + b) ){
+int ariel::subCheckOverflow(int val1, int val2){
+    if ( (val2 < 0  && val1 > MAX_INT + val2)
+    ||  (val2 > 0 && val1 < MIN_INT + val2) ){
         throw std::overflow_error("from subCheckOverflow");
     }
     else {
-        return a-b;
+        return val1-val2;
     }
 }
 
-int ariel::mulCheckOverflow(int a, int b){
-    long long tmp = static_cast<long long>(a) * b;
+int ariel::mulCheckOverflow(int val1, int val2){
+    long long tmp = static_cast<long long>(val1) * val2;
     if ( (tmp > MAX_INT) || (tmp < MIN_INT) ) {
         throw std::overflow_error("from mulCheckOverflow");
     }else {
-        return a * b;
+        return val1 * val2;
     }
 }
 
@@ -443,12 +408,6 @@ ariel::Fraction ariel::truncFraction(ariel::Fraction frac){
     double fracTodouble = (frac.getNumerator() * 1.0) / (frac.getDenominator() * 1.0 );
     return doubleToFraction(fracTodouble);
 }
-
-// unsigned int ariel::absu(int value) {
-//     return (value < 0) ? -((unsigned int)value) : (unsigned int) value;
-// }
-
-
 
 //Ressources : 
 //https://www.geeksforgeeks.org/reduce-the-fraction-to-its-lowest-form/

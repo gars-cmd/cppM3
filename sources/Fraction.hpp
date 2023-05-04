@@ -81,16 +81,15 @@ public:
 
 };
 
+//Utils
 ariel::Fraction doubleToFraction(double num);
 std::pair<int, int> fixSign(int numerator, int denominator);
 bool isValidStream(int numerator, int denominator);
 bool checkInteger(std::string input);
-int addCheckOverflow(int a, int b);
-int subCheckOverflow(int a, int b);
-int mulCheckOverflow(int a, int b);
+int addCheckOverflow(int val1, int val2);
+int subCheckOverflow(int val1, int val2);
+int mulCheckOverflow(int val1, int val2);
 ariel::Fraction truncFraction(ariel::Fraction frac);
-unsigned int absu(int value);
-
 }
 #endif //FRACTION_HPP
 
